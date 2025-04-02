@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+   <meta charset="UTF-8">
+   <meta name="viewport" content="width=device-width, initial-scale=1.0">
+   <title>Sign Up</title>
+   <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+   <link rel="stylesheet" href="styles.css">
+   <link rel="icon" type="image/x-icon" href="favicon.ico">
+   <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.8.2/angular.min.js"></script>
+</head>
+
+
+<body ng-app="shopperApp" ng-controller="ShopperController">
+
+   <header>
+      <div id="header"></div>
+   </header>
+   <script>
+      document.addEventListener('DOMContentLoaded', function () {
+         // Load Header
+         fetch('/header.html')
+            .then(response => response.text())
+            .then(data => {
+               document.getElementById('header').innerHTML = data;
+            })
+            .catch(err => console.error('Error loading header:', err));
+      });
+   </script>
+
+   <div class="container">
+      <div class="py-5 text-center">
+         <h2>Shopper Details Form</h2>
+         <p class="lead">Please fill out the form below to add or update shopper information.</p>
+      </div>
+
+      <div class="row">
+         <div class="col-md-12">
+            <form name="shopperForm" class="needs-validation" id="shopperForm"
+               ng-submit="submitShopperForm(shopperData)" novalidate>
+               <div class="mb-3">
+                  <label for="shopperEmail">Email Address <span class="text-muted">(Required)</span></label>
+                  <input type="email" class="form-control" id="shopperEmail" ng-model="shopperData.shopperEmail"
+                     placeholder="you@example.com" required>
+                  <div class="invalid-feedback">
+                     Please enter a valid email address.
+                  </div>
+                  <div class="mb-3">
+                     <label for="shopperName">Full Name <span class="text-muted">(Required)</span></label>
+                     <input type="text" class="form-control" id="shopperName" ng-model="shopperData.shopperName"
+                        placeholder="Full Name" required>
+                     <div class="invalid-feedback">
+                        Please enter shopper's full name.
+                     </div>
+                  </div>
+
+                  <div class="mb-3">
+                     <label for="shopperPhone">Contact Phone Number <span class="text-muted">(Optional)</span></label>
+                     <input type="tel" class="form-control" id="shopperPhone" ng-model="shopperData.shopperPhone"
+                        placeholder="Phone Number (Optional)">
+                  </div>
+
+                  <div class="mb-3">
+                     <label for="shopperAge">Age <span class="text-muted">(Required)</span></label>
+                     <input type="number" class="form-control" id="shopperAge" ng-model="shopperData.shopperAge"
+                        placeholder="Age" min="1" required>
+                     <div class="invalid-feedback">
+                        Please enter shopper's age. Must be a number greater than 0.
+                     </div>
+                  </div>
+
+                  <div class="mb-3">
+                     <label for="shopperAddress">Address <span class="text-muted">(Required)</span></label>
+                     <textarea class="form-control" id="shopperAddress" ng-model="shopperData.shopperAddress" rows="3"
+                        placeholder="Full Address" required></textarea>
+                     <div class="invalid-feedback">
+                        Please enter shopper's full address.
+                     </div>
+                  </div>
+
+                  <hr class="mb-4">
+                  <button class="btn btn-primary btn-lg btn-block" type="submit"
+                     ng-disabled="shopperForm.$invalid || isSubmitting">Submit Shopper Details</button>
+            </form>
+         </div>
+      </div>
+   </div>
+
+   <script>
+      angular.module('shopperApp', [])
+         .controller('ShopperController', ['$scope', '$http', function ($scope, $http) {
+            $scope.shopperData = {};
+            $scope.emailError = false;
+            $scope.isSubmitting = false;
+            $scope.successMessage = '';
+
+            $scope.submitShopperForm = function (shopperData) {
+               if ($scope.shopperForm.$valid) {
+                  $scope.isSubmitting = true;
+
+                  $http.post('/shoppers', shopperData)
+                     .then(function (response) {
+                        if (response.status === 201) { // Success
+                           window.alert('Shopper registered successfully!');
+                           $scope.shopperData = {}; // Clear form data
+                           $scope.shopperForm.$setPristine(); // Reset form state
+                           $scope.shopperForm.$setUntouched();
+                        }
+                     })
+                     .catch(function (error) {
+                        if (error.status === 409) { // Duplicate email
+                           window.alert('Error: Email already exists. Please try another.');
+                        } else {
+                           console.error('Error:', error);
+                           window.alert('An unexpected error occurred. Please try again later.');
+                        }
+                     })
+                     .finally(function () {
+                        $scope.isSubmitting = false; // Re-enable the form after submission attempt
+                     });
+               }
+            };
+         }]);
+   </script>
+
+   <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+   <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.3/dist/umd/popper.min.js"></script>
+   <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+</body>
+
+</html>

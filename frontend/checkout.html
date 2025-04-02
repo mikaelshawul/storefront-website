@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+   <meta charset="UTF-8">
+   <meta name="viewport" content="width=device-width, initial-scale=1.0">
+   <title>Shipping Selection - Nature's Basket</title>
+   <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+   <link rel="stylesheet" href="styles.css">
+   <link rel="stylesheet" href="shipping.css">
+   <link rel="icon" type="image/x-icon" href="favicon.ico">
+</head>
+
+<body>
+
+   <header>
+      <div id="header"></div>
+   </header>
+   <script>
+      document.addEventListener('DOMContentLoaded', function () {
+         // Load Header
+         fetch('/header.html')
+            .then(response => response.text())
+            .then(data => {
+               document.getElementById('header').innerHTML = data;
+            })
+            .catch(err => console.error('Error loading header:', err));
+      });
+   </script>
+
+   <div class="container mt-5">
+      <h2 class="text-center mb-4">Checkout</h2>
+      <form id="shippingForm" class="needs-validation" novalidate>
+         <section class="mb-4">
+            <h4>Shipping Destination</h4>
+            <div class="form-group">
+               <label for="shippingCountry">Country</label>
+               <select class="form-control" id="shippingCountry" required>
+                  <option value="" disabled selected>Select Country</option>
+                  <option value="USA">United States</option>
+                  <option value="CAN">Canada</option>
+               </select>
+               <div class="invalid-feedback">Please select your country.</div>
+            </div>
+            <div class="form-group">
+               <label for="shippingState">State/Province</label>
+               <select class="form-control" id="shippingState" required>
+                  <option value="" disabled selected>Select State/Province</option>
+               </select>
+               <div class="invalid-feedback">Please select your state/province.</div>
+            </div>
+            <div class="form-group">
+               <label for="shippingCity">City</label>
+               <input type="text" class="form-control" id="shippingCity" placeholder="Enter City" required>
+               <div class="invalid-feedback">Please enter your city.</div>
+            </div>
+            <div class="form-group">
+               <label for="shippingZip">Zip/Postal Code</label>
+               <input type="text" class="form-control" id="shippingZip" placeholder="Enter Zip/Postal Code" required>
+               <div class="invalid-feedback">Please enter your zip/postal code.</div>
+            </div>
+            <div class="form-group">
+               <label for="shippingAddress">Address</label>
+               <input type="text" class="form-control" id="shippingAddress" placeholder="Enter Address" required>
+               <div class="invalid-feedback">Please enter address.</div>
+            </div>
+         </section>
+
+         <section class="mb-4">
+            <h4>Shipping Carrier</h4>
+            <div class="form-check">
+               <input class="form-check-input" type="radio" name="shippingCarrier" id="carrierUPS" value="UPS" required>
+               <label class="form-check-label" for="carrierUPS">
+                  UPS
+               </label>
+            </div>
+            <div class="form-check">
+               <input class="form-check-input" type="radio" name="shippingCarrier" id="carrierFedEx" value="FedEx">
+               <label class="form-check-label" for="carrierFedEx">
+                  FedEx
+               </label>
+            </div>
+            <div class="form-check">
+               <input class="form-check-input" type="radio" name="shippingCarrier" id="carrierUSPS" value="USPS">
+               <label class="form-check-label" for="carrierUSPS">
+                  USPS
+               </label>
+            </div>
+            <div class="invalid-feedback">Please select a shipping carrier.</div>
+         </section>
+
+         <section class="mb-4">
+            <h4>Shipping Method</h4>
+            <div id="shippingMethods">
+               <p>Select a shipping carrier to see available methods.</p>
+            </div>
+         </section>
+
+         <button type="submit" class="btn btn-primary btn-lg btn-block">Continue to Payment</button>
+      </form>
+
+      <form id="billingForm" style="display: none;" novalidate>
+         <h3>Billing Information</h3>
+         <div class="form-group">
+            <label for="billingName">Full Name</label>
+            <input type="text" class="form-control" id="billingName" required>
+            <div class="invalid-feedback">Please enter your full name.</div>
+         </div>
+         <div class="form-group">
+            <label for="billingCountry">Country</label>
+            <select class="form-control" id="billingCountry" required>
+               <option value="" disabled selected>Select Country</option>
+               <option value="USA">United States</option>
+               <option value="CAN">Canada</option>
+            </select>
+            <div class="invalid-feedback">Please select your country.</div>
+         </div>
+         <div class="form-group">
+            <label for="billingState">State/Province</label>
+            <select class="form-control" id="billingState" required>
+               <option value="" disabled selected>Select State/Province</option>
+            </select>
+            <div class="invalid-feedback">Please select your state/province.</div>
+         </div>
+         <div class="form-group">
+            <label for="billingCity">City</label>
+            <input type="text" class="form-control" id="billingCity" placeholder="Enter City" required>
+            <div class="invalid-feedback">Please enter your city.</div>
+         </div>
+         <div class="form-group">
+            <label for="billingZip">Zip/Postal Code</label>
+            <input type="text" class="form-control" id="billingZip" placeholder="Enter Zip/Postal Code" required>
+            <div class="invalid-feedback">Please enter your zip/postal code.</div>
+         </div>
+         <div class="form-group">
+            <label for="billingAddress">Address</label>
+            <input type="text" class="form-control" id="billingAddress" placeholder="Enter Address" required>
+            <div class="invalid-feedback">Please enter address.</div>
+         </div>
+
+         <button type="submit" class="btn btn-primary btn-lg btn-block">Complete Payment</button>
+      </form>
+   </div>
+
+   <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+   <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.3/dist/umd/popper.min.js"></script>
+   <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+   <script src="shipping.js"></script>
+
+</body>
+
+</html>

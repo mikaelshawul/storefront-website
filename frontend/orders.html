@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+   <meta charset="UTF-8">
+   <meta name="viewport" content="width=device-width, initial-scale=1.0">
+   <title>Orders</title>
+   <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+   <link rel="stylesheet" href="styles.css">
+   <link rel="icon" type="image/x-icon" href="favicon.ico">
+   <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+   <script src="https://cdnjs.cloudflare.com/ajax/libs/angular.js/1.8.2/angular.min.js"></script>
+</head>
+
+<body ng-app="ordersApp" ng-controller="OrdersController as ordersCtrl">
+   <header>
+      <div id="header"></div>
+   </header>
+   <script>
+      document.addEventListener('DOMContentLoaded', function () {
+         // Load Header
+         fetch('/header.html')
+            .then(response => response.text())
+            .then(data => {
+               document.getElementById('header').innerHTML = data;
+            })
+            .catch(err => console.error('Error loading header:', err));
+      });
+   </script>
+
+   <!-- Container for Orders -->
+   <div class="container mt-5">
+      <h2 class="text-left mb-4">Orders</h2>
+      <div class="row" id="ordersContainer">
+
+         <!-- Show "No orders" message if there are no orders -->
+         <div class="col-12" ng-if="ordersCtrl.orders.length === 0">
+            <div class="alert alert-warning text-center">
+               No orders found.
+            </div>
+         </div>
+
+         <!-- Orders will be dynamically added here using AngularJS -->
+         <div class="col-md-4" ng-repeat="order in ordersCtrl.orders">
+            <div class="card text-center p-3 mt-3">
+               <div class="card-body">
+                  <h5 class="text-primary font-weight-bold">Order #{{order.orderNumber}}</h5>
+                  <p><strong>Shipping:</strong> {{ order.shipping.method}} to {{order.shipping.city}}</p>
+                  <p><strong>Items:</strong></p>
+                  <ul class="list-group">
+                     <li class="list-group-item" ng-repeat="product in order.cartContents">
+                        {{ product.productDescription}} -
+                        Quantity: {{ product.quantity }}
+                     </li>
+                  </ul>
+                  <p><strong>Status:</strong> {{ order.status }}</p>
+                  <button class="btn btn-warning" ng-click="ordersCtrl.returnOrder(order.orderNumber)"
+                     ng-disabled="order.status === 'Returned'">
+                     Return
+                  </button>
+               </div>
+            </div>
+         </div>
+      </div>
+   </div>
+
+   <!-- AngularJS Script for Orders -->
+   <script>
+      angular.module('ordersApp', [])
+         .controller('OrdersController', function ($http) {
+            var vm = this;
+            vm.orders = [];
+
+            // Load orders from API (Assuming '/orders' returns an array of orders)
+            vm.loadOrders = function () {
+               $http.get('/orders')
+                  .then(function (response) {
+                     console.log('Orders response:', response.data); // Debugging
+
+                     // Map the orders to ensure proper structure
+                     vm.orders = response.data.map(order => ({
+                        rawOrder: order, //Original order state to send back to server
+                        orderNumber: order.orderNumber || 'Unknown',
+                        shipping: {
+                           country: order.shipping.country || 'Unknown',
+                           state: order.shipping.state || 'Unknown',
+                           city: order.shipping.city || 'Unknown',
+                           zipCode: order.shipping.zipCode || 'Unknown',
+                           address: order.shipping.address || 'Unknown',
+                           carrier: order.shipping.carrier || 'Unknown',
+                           method: order.shipping.method || 'Unknown'
+                        },
+                        billing: {
+                           name: order.billing.name || 'Unknown',
+                           country: order.billing.country || 'Unknown',
+                           state: order.billing.state || 'Unknown',
+                           city: order.billing.city || 'Unknown',
+                           zipCode: order.billing.zipCode || 'Unknown',
+                           address: order.billing.address || 'Unknown'
+                        },
+                        cartContents: order.cartContents.map(item => ({
+                           productId: item.product.productId || 'Unknown',
+                           productDescription: item.product.productDescription || 'No description',
+                           productCategory: item.product.productCategory || 'Unknown',
+                           productUnit: item.product.productUnit || 'Unknown',
+                           productPrice: parseFloat(item.product.productPrice) || 0,
+                           productWeight: parseFloat(item.product.productWeight) || 0,
+                           quantity: item.quantity || 0
+                        })),
+                        status: order.status || 'Unknown',
+                     }));
+
+                     console.log('Mapped orders:', vm.orders); // Debugging
+                  })
+                  .catch(function (error) {
+                     console.error('Error loading orders:', error); // Debugging
+                  });
+            };
+
+            // Return an order
+            vm.returnOrder = function (orderNumber) {
+               const orderToReturn = vm.orders.find(order => order.orderNumber === orderNumber);
+
+               if (!orderToReturn) {
+                  alert('Order not found.');
+                  return;
+               }
+
+               if (confirm('Are you sure you want to return this order?')) {
+
+                  //mark it as returned and block the return button
+                  orderToReturn.status = 'Returned';
+                  orderToReturn.rawOrder.status = 'Returned';
+
+                  // Post the order to the /returns route
+                  $http.post('/returns', orderToReturn.rawOrder)
+                     .then(function (response) {
+                        alert('Order returned successfully.');
+                        console.log('Return response:', response.data);
+
+                        $http.put(`/orders/${orderToReturn.rawOrder.orderNumber}`, orderToReturn.rawOrder)
+                           .then(function (updateResponse) {
+                              console.log('Order status updated in /orders:', updateResponse.data);
+                           })
+                           .catch(function (updateError) {
+                              console.error('Error updating order status in /orders:', updateError);
+                              alert('Failed to update order status in orders data.');
+                           });
+                     })
+                     .catch(function (error) {
+                        console.error('Error returning order:', error);
+                        alert('Failed to return the order. Please try again.');
+                     });
+               }
+            };
+
+
+            // Initial product load
+            vm.loadOrders();
+         });
+   </script>
+</body>
+
+</html>

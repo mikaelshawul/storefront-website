@@ -1,0 +1,35 @@
+{
+    "products": [
+      {"productId": "1", "productDescription": "Apple", "productCategory": "fruit", "productUnit": "pounds", "productPrice": "3.00", "productWeight": "1.5"},
+      {"productId": "2", "productDescription": "Banana", "productCategory": "fruit", "productUnit": "pounds", "productPrice": "1.20", "productWeight": "2.0"},
+      {"productId": "3", "productDescription": "Milk", "productCategory": "dairy", "productUnit": "liters", "productPrice": "1.60", "productWeight": "1.0"},
+      {"productId": "4", "productDescription": "Cheese", "productCategory": "dairy", "productUnit": "ounces", "productPrice": "5.50", "productWeight": "8.0"},
+      {"productId": "5", "productDescription": "Rice", "productCategory": "grain", "productUnit": "pounds", "productPrice": "2.00", "productWeight": "2.5"},
+      {"productId": "6", "productDescription": "Tofu", "productCategory": "protein", "productUnit": "pounds", "productPrice": "3.00", "productWeight": "1.0"},
+      {"productId": "7", "productDescription": "Chocolate Bar", "productCategory": "candy", "productUnit": "ounces", "productPrice": "1.00", "productWeight": "3.0"},
+      {"productId": "8", "productDescription": "Chicken Breast", "productCategory": "meat", "productUnit": "pounds", "productPrice": "6.50", "productWeight": "1.5"},
+      {"productId": "9", "productDescription": "Orange Juice", "productCategory": "beverage", "productUnit": "liters", "productPrice": "3.50", "productWeight": "1.0"},
+      {"productId": "10", "productDescription": "Carrots", "productCategory": "vegetable", "productUnit": "pounds", "productPrice": "1.80", "productWeight": "2.0"},
+      {"productId": "11", "productDescription": "Lettuce", "productCategory": "vegetable", "productUnit": "pounds", "productPrice": "1.50", "productWeight": "1.0"},
+      {"productId": "12", "productDescription": "Potatoes", "productCategory": "vegetable", "productUnit": "pounds", "productPrice": "0.90", "productWeight": "5.0"},
+      {"productId": "13", "productDescription": "Salmon", "productCategory": "meat", "productUnit": "pounds", "productPrice": "12.00", "productWeight": "1.0"},
+      {"productId": "14", "productDescription": "Almonds", "productCategory": "protein", "productUnit": "pounds", "productPrice": "8.50", "productWeight": "1.0"},
+      {"productId": "15", "productDescription": "Eggs", "productCategory": "dairy", "productUnit": "amount", "productPrice": "3.00", "productWeight": "12"},
+      {"productId": "16", "productDescription": "Peanut Butter", "productCategory": "protein", "productUnit": "ounces", "productPrice": "4.00", "productWeight": "16.0"},
+      {"productId": "17", "productDescription": "Whole Wheat Bread", "productCategory": "grain", "productUnit": "amount", "productPrice": "2.50", "productWeight": "1"},
+      {"productId": "18", "productDescription": "Yogurt", "productCategory": "dairy", "productUnit": "ounces", "productPrice": "0.90", "productWeight": "6.0"},
+      {"productId": "19", "productDescription": "Strawberries", "productCategory": "fruit", "productUnit": "pounds", "productPrice": "5.00", "productWeight": "1.5"},
+      {"productId": "20", "productDescription": "Cucumber", "productCategory": "vegetable", "productUnit": "pounds", "productPrice": "1.10", "productWeight": "1.0"},
+      {"productId": "21", "productDescription": "Ground Beef", "productCategory": "meat", "productUnit": "pounds", "productPrice": "7.00", "productWeight": "1.0"},
+      {"productId": "22", "productDescription": "Tomato Sauce", "productCategory": "vegetable", "productUnit": "ounces", "productPrice": "2.20", "productWeight": "15.0"},
+      {"productId": "23", "productDescription": "Spinach", "productCategory": "vegetable", "productUnit": "pounds", "productPrice": "2.50", "productWeight": "1.0"},
+      {"productId": "24", "productDescription": "Honey", "productCategory": "candy", "productUnit": "ounces", "productPrice": "6.00", "productWeight": "12.0"},
+      {"productId": "25", "productDescription": "Soda", "productCategory": "beverage", "productUnit": "liters", "productPrice": "1.50", "productWeight": "2.0"},
+      {"productId": "26", "productDescription": "Peas", "productCategory": "vegetable", "productUnit": "pounds", "productPrice": "2.10", "productWeight": "1.0"},
+      {"productId": "27", "productDescription": "Cereal", "productCategory": "grain", "productUnit": "ounces", "productPrice": "3.80", "productWeight": "18.0"},
+      {"productId": "28", "productDescription": "Pasta", "productCategory": "grain", "productUnit": "pounds", "productPrice": "1.70", "productWeight": "1.0"},
+      {"productId": "29", "productDescription": "Butter", "productCategory": "dairy", "productUnit": "ounces", "productPrice": "4.50", "productWeight": "8.0"},
+      {"productId": "30", "productDescription": "Grapes", "productCategory": "fruit", "productUnit": "pounds", "productPrice": "3.80", "productWeight": "2.0"}
+    ]
+  }
+  

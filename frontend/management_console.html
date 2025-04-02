@@ -1,0 +1,471 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+   <meta charset="UTF-8">
+   <meta name="viewport" content="width=device-width, initial-scale=1.0">
+   <title>Product Management</title>
+   <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+   <link rel="stylesheet" href="styles.css">
+   <link rel="icon" type="image/x-icon" href="favicon.ico">
+</head>
+
+<body ng-app="shopApp" ng-controller="ShopController as vm">
+
+   <header>
+      <div id="header"></div>
+   </header>
+   <script>
+      document.addEventListener('DOMContentLoaded', function () {
+         // Load Header
+         fetch('/header.html')
+            .then(response => response.text())
+            .then(data => {
+               document.getElementById('header').innerHTML = data;
+            })
+            .catch(err => console.error('Error loading header:', err));
+      });
+   </script>
+
+   <div class="container mt-5">
+      <h2 class="text-center">Management Console</h2>
+      <hr>
+      <h4>Search Order by Order Number</h4>
+      <input type="text" id="searchOrderNumber" class="form-control" placeholder="Enter Order Number">
+      <button id="searchOrderNumberButton" class="btn btn-secondary mt-2">Search</button>
+      <div id="searchResultsList3"></div>
+
+      <hr>
+      <h4>Search Shopper by Email</h4>
+      <input type="text" id="searchShopperEmail" class="form-control" placeholder="Enter Shopper Email">
+      <button id="searchShopperEmailButton" class="btn btn-secondary mt-2">Search</button>
+      <div id="searchResultsList2"></div>
+
+      <hr>
+      <h4>Search Product by Name</h4>
+      <input type="text" id="searchProductName" class="form-control" placeholder="Enter Product Name">
+      <button id="searchProductNameButton" class="btn btn-secondary mt-2">Search</button>
+      <div id="searchResultsList"></div>
+
+      <hr>
+
+      <!-- Form to add a product -->
+      <h4>Add New Product</h4>
+      <form id="productForm" class="needs-validation" novalidate>
+         <div class="form-group">
+            <label for="productId">Product ID (Required)</label>
+            <input type="text" class="form-control" id="productId" required>
+         </div>
+         <div class="form-group">
+            <label for="productDescription">Product Description (Required)</label>
+            <input type="text" class="form-control" id="productDescription" required>
+         </div>
+         <div class="form-group">
+            <label for="productCategory">Product Category (Required)</label>
+            <select class="form-control" id="productCategory" required>
+               <option value="" disabled selected>Select a Category</option>
+               <option value="vegetable">Vegetable</option>
+               <option value="fruit">Fruit</option>
+               <option value="dairy">Dairy</option>
+               <option value="meat">Meat</option>
+               <option value="grain">Grain</option>
+               <option value="protein">Non-Meat Protein</option>
+               <option value="candy">Candy</option>
+               <option value="beverage">Beverages</option>
+            </select>
+         </div>
+         <div class="form-group">
+            <label for="productUnit">Product Unit of Measure (Required)</label>
+            <select class="form-control" id="productUnit" required>
+               <option value="" disabled selected>Select a Unit of Measure</option>
+               <option value="pounds">Pounds</option>
+               <option value="ounces">Ounces</option>
+               <option value="kilograms">Kilograms</option>
+               <option value="grams">Grams</option>
+               <option value="liters">Liters</option>
+               <option value="milliliters">Milliliters</option>
+               <option value="amount">Amount</option>
+            </select>
+         </div>
+         <div class="form-group">
+            <label for="productPrice">Product Price (Required)</label>
+            <input type="number" class="form-control" id="productPrice" step="0.01" min="0" required>
+         </div>
+         <div class="form-group">
+            <label for="productWeight">Product Weight/Amount</label>
+            <input type="number" class="form-control" id="productWeight" step="0.01" min="0" required>
+         </div>
+         <button type="submit" class="btn btn-primary btn-block">Add Product</button>
+      </form>
+
+      <!-- Modal Dialog for Editing Product -->
+      <div class="modal fade" id="editModal" tabindex="-1" role="dialog" aria-labelledby="editModalLabel"
+         aria-hidden="true">
+         <div class="modal-dialog" role="document">
+            <div class="modal-content">
+               <div class="modal-header">
+                  <h5 class="modal-title" id="editModalLabel">Edit Product</h5>
+                  <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                     <span aria-hidden="true">&times;</span>
+                  </button>
+               </div>
+               <div class="modal-body">
+                  <form id="editProductForm">
+                     <div class="form-group">
+                        <label for="editProductId">Product ID</label>
+                        <input type="text" class="form-control" id="editProductId" disabled>
+                     </div>
+                     <div class="form-group">
+                        <label for="editProductDescription">Product Description</label>
+                        <input type="text" class="form-control" id="editProductDescription">
+                     </div>
+                     <div class="form-group">
+                        <label for="editProductCategory">Product Category</label>
+                        <select class="form-control" id="editProductCategory">
+                           <option value="vegetable">Vegetable</option>
+                           <option value="fruit">Fruit</option>
+                           <option value="dairy">Dairy</option>
+                           <option value="meat">Meat</option>
+                           <option value="grain">Grain</option>
+                           <option value="protein">Non-Meat Protein</option>
+                           <option value="candy">Candy</option>
+                           <option value="beverage">Beverages</option>
+                        </select>
+                     </div>
+                     <div class="form-group">
+                        <label for="editProductPrice">Product Price</label>
+                        <input type="number" class="form-control" id="editProductPrice" step="0.01" min="0">
+                     </div>
+                     <div class="form-group">
+                        <label for="editProductUnit">Unit of Measure</label>
+                        <select class="form-control" id="editProductUnit">
+                           <option value="pounds">Pounds</option>
+                           <option value="ounces">Ounces</option>
+                           <option value="kilograms">Kilograms</option>
+                           <option value="grams">Grams</option>
+                           <option value="liters">Liters</option>
+                           <option value="milliliters">Milliliters</option>
+                           <option value="amount">Amount</option>
+                        </select>
+                     </div>
+                     <div class="form-group">
+                        <label for="editProductWeight">Product Weight/Amount</label>
+                        <input type="number" class="form-control" id="editProductWeight" step="0.01" min="0">
+                     </div>
+                     <button type="submit" class="btn btn-primary">Save Changes</button>
+                  </form>
+               </div>
+            </div>
+         </div>
+      </div>
+
+   </div>
+
+   <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+   <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.8.2/angular.min.js"></script>
+   <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.5.2/dist/js/bootstrap.bundle.min.js"></script>
+   <script>
+      // AngularJS App
+      angular.module('shopApp', [])
+         .controller('ShopController', function ($http) {
+            var vm = this;
+            vm.products = [];
+            vm.orders = [];
+            vm.shoppers = [];
+
+            // Load products from API
+            vm.loadProducts = function () {
+               $http.get('/products')
+                  .then(function (response) {
+                     vm.products = response.data;
+                     $(document).trigger('productsLoaded', [vm.products]);
+                  })
+                  .catch(function (error) {
+                     console.error('Error fetching products:', error);
+                  });
+            };
+
+            // Load shoppers from API
+            vm.loadShoppers = function () {
+               $http.get('/shoppers')
+                  .then(function (response) {
+                     vm.shoppers = response.data;
+                     $(document).trigger('shoppersLoaded', [vm.shoppers]);
+                  })
+                  .catch(function (error) {
+                     console.error('Error fetching shoppers:', error);
+                  });
+            };
+
+            //Load orders from API
+            vm.loadOrders = function () {
+               $http.get('/orders')
+                  .then(function (response) {
+                     vm.orders = response.data;
+                     $(document).trigger('ordersLoaded', [vm.orders]);
+                  })
+                  .catch(function (error) {
+                     console.error('Error fetching orders:', error);
+                  });
+            };
+
+            vm.loadProducts();
+            vm.loadOrders();
+            vm.loadShoppers();
+         });
+
+      $(document).ready(function () {
+         // Initialize product and shopper search functionality
+         initializeProductSearch();
+         initializeOrderSearch();
+         initializeShopperSearch();
+      });
+
+      // Function to handle product search
+      function initializeProductSearch() {
+         var allProducts = [];
+
+         // When products are loaded, handle search functionality
+         $(document).on('productsLoaded', function (event, products) {
+            allProducts = Array.isArray(products) ? products : [products];
+
+            $('#searchProductNameButton').on('click', function () {
+               var searchEmail = $('#searchProductName').val().trim().toLowerCase();
+               console.log("Searching for:", searchEmail);
+               console.log("All products:", allProducts);
+
+               var searchResults = allProducts.filter(function (product) {
+                  return product.productDescription.toLowerCase().includes(searchEmail);
+               });
+
+               var searchResultHTML = '';
+               if (searchResults.length > 0) {
+                  searchResults.forEach(function (product) {
+                     var price = parseFloat(product.productPrice).toFixed(2); // Ensure price is a number
+                     searchResultHTML += `
+                     <div class="card text-center p-3 mt-3">
+                        <div class="card-body">
+                           <h5 class="text-primary font-weight-bold">$${price} / ${product.productUnit}</h5>
+                           <p><strong>Product ID:</strong> ${product.productId}</p>
+                           <p>${product.productDescription}</p>
+                           <button class="btn btn-warning editProductBtn" data-product='${JSON.stringify(product)}'>
+                              Edit Product
+                           </button>
+                           <button class="btn btn-danger deleteProductBtn" data-product='${JSON.stringify(product)}'>
+                              Delete Product
+                           </button>
+                        </div>
+                     </div>
+                  `;
+                  });
+                  $('#searchResultsList').html(searchResultHTML);
+
+                  // Handle Edit Product
+                  $('.editProductBtn').on('click', function () {
+                     var product = JSON.parse($(this).attr('data-product'));
+                     $('#editProductId').val(product.productId);
+                     $('#editProductDescription').val(product.productDescription);
+                     $('#editProductCategory').val(product.productCategory);
+                     $('#editProductPrice').val(product.productPrice);
+                     $('#editProductUnit').val(product.productUnit);
+                     $('#editProductWeight').val(product.productWeight);
+                     $('#editModal').modal('show');
+                  });
+
+                  // Handle Delete Product
+                  $('.deleteProductBtn').on('click', function () {
+                     var product = JSON.parse($(this).attr('data-product'));
+
+                     $.ajax({
+                        url: '/products/' + product.productId,
+                        type: 'DELETE',
+                        success: function () {
+                           alert("Product deleted!");
+                           $('#searchResultsList').text('');
+                           location.reload(); // Refresh products list
+                        },
+                        error: function (error) {
+                           console.log(error);
+                           alert("Error deleting product.");
+                        }
+                     });
+                  });
+
+               } else {
+                  $('#searchResultsList').html("<div class='alert alert-warning mt-3'>Product not found</div>");
+               }
+            });
+
+            // Edit Product form submit
+            $('#editProductForm').on('submit', function (e) {
+               e.preventDefault();
+               var editedProduct = {
+                  productId: $('#editProductId').val(),
+                  productDescription: $('#editProductDescription').val(),
+                  productCategory: $('#editProductCategory').val(),
+                  productUnit: $('#editProductUnit').val(),
+                  productPrice: $('#editProductPrice').val(),
+                  productWeight: $('#editProductWeight').val()
+               };
+
+               $.ajax({
+                  url: '/products/' + editedProduct.productId,
+                  type: 'PUT',
+                  data: JSON.stringify(editedProduct),
+                  contentType: 'application/json',
+                  success: function (response) {
+                     alert("Product updated successfully!");
+                     $('#editModal').modal('hide');
+                     location.reload();
+                  },
+                  error: function (error) {
+                     console.log(error);
+                     alert("Error updating product.");
+                  }
+               });
+            });
+
+            // Add Product
+            $('#productForm').on('submit', function (e) {
+               e.preventDefault();
+               var newProductId = $('#productId').val();
+
+               // Check if Product ID already exists
+               var duplicateProduct = allProducts.find(function (product) {
+                  return product.productId === newProductId;
+               });
+
+               if (duplicateProduct) {
+                  alert("Error: Product ID already exists. Please use a unique ID.");
+                  return; // Stop submission
+               }
+
+               var newProduct = {
+                  productId: newProductId,
+                  productDescription: $('#productDescription').val(),
+                  productCategory: $('#productCategory').val(),
+                  productUnit: $('#productUnit').val(),
+                  productPrice: $('#productPrice').val(),
+                  productWeight: $('#productWeight').val()
+               };
+
+               $.ajax({
+                  url: '/products',
+                  type: 'POST',
+                  data: JSON.stringify(newProduct),
+                  contentType: 'application/json',
+                  success: function () {
+                     alert("Product added successfully!");
+                     $('#productForm')[0].reset();
+
+                     location.reload();
+                  },
+                  error: function (error) {
+                     console.log(error);
+                     alert("Error adding product.");
+                  }
+               });
+            });
+         });
+      }
+
+      // Function to handle shopper search
+      function initializeShopperSearch() {
+         var allShoppers = [];
+
+         // When shoppers are loaded, handle search functionality
+         $(document).on('shoppersLoaded', function (event, shoppers) {
+            allShoppers = Array.isArray(shoppers) ? shoppers : [shoppers];
+
+            $('#searchShopperEmailButton').on('click', function () {
+               var searchEmail = $('#searchShopperEmail').val().trim().toLowerCase();
+               console.log("Searching for shopper:", searchEmail);
+               console.log("All shoppers:", allShoppers);
+
+               var searchResults = allShoppers.filter(function (shopper) {
+                  return shopper.shopperEmail.toLowerCase().includes(searchEmail);
+               });
+
+               var searchResultHTML = '';
+               if (searchResults.length > 0) {
+                  searchResults.forEach(function (shopper) {
+                     searchResultHTML += `
+                     <div class="card text-center p-3 mt-3">
+                        <div class="card-body">
+                           <h5 class="text-primary font-weight-bold">${shopper.shopperName}</h5>
+                           <p><strong>Email:</strong> ${shopper.shopperEmail}</p>
+                           <p><strong>Phone:</strong> ${shopper.shopperPhone || 'N/A'}</p>
+                           <p><strong>Age:</strong> ${shopper.shopperAge}</p>
+                           <p><strong>Address:</strong> ${shopper.shopperAddress}</p>
+                        </div>
+                     </div>
+                  `;
+                  });
+                  $('#searchResultsList2').html(searchResultHTML);
+               } else {
+                  $('#searchResultsList2').html("<div class='alert alert-warning mt-3'>Shopper not found</div>");
+               }
+            });
+         });
+      }
+
+      // Function to handle order search
+      function initializeOrderSearch() {
+         var allOrders = [];
+
+         // When orders are loaded, handle search functionality
+         $(document).on('ordersLoaded', function (event, orders) {
+            allOrders = Array.isArray(orders) ? orders : [orders];
+
+            $('#searchOrderNumberButton').on('click', function () {
+               var searchOrderNumber = $('#searchOrderNumber').val().trim();
+               console.log("Searching for order:", searchOrderNumber);
+               console.log("All orders:", allOrders);
+
+               var searchResults = allOrders.filter(function (order) {
+                  return order.orderNumber.toString().includes(searchOrderNumber);
+               });
+
+               var orderSearchResultHTML = '';
+               if (searchResults.length > 0) {
+
+                  searchResults.forEach(function (order) {
+
+                     var itemsHTML = '';
+                     order.cartContents.forEach(function (item) {
+                        itemsHTML += `
+                     <li class="list-group-item">
+                        ${item.product.productDescription || 'No description'} -
+                        Quantity: ${item.quantity || 0}
+                     </li>
+                  `;
+                     });
+
+                     orderSearchResultHTML += `
+                     <div class="card text-center p-3 mt-3">
+                        <div class="card-body">
+                           <h5 class="text-primary font-weight-bold">Order #${order.orderNumber}</h5>
+                           <p><strong>Shipping:</strong> ${order.shipping.method}</p>
+                           <p><strong>Items:</strong></p>
+                           <ul class="list-group">
+                              ${itemsHTML}
+                           </ul>
+                           <p><strong>Status:</strong> ${order.status}</p>
+                        </div>
+                     </div>
+                  `;
+
+                  });
+
+                  $('#searchResultsList3').html(orderSearchResultHTML);
+
+               } else {
+                  $('#searchResultsList3').html("<div class='alert alert-warning mt-3'>Order not found</div>");
+               }
+            });
+         });
+      }
+   </script>
+</body>
+
+</html>

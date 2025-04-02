@@ -1,0 +1,208 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+   <meta charset="UTF-8">
+   <meta name="viewport" content="width=device-width, initial-scale=1.0">
+   <title>Shopping Cart</title>
+   <link rel="icon" type="image/x-icon" href="favicon.ico">
+   <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+   <link rel="stylesheet" href="styles.css">
+</head>
+
+<body>
+
+   <header>
+      <div id="header"></div>
+   </header>
+   <script>
+      document.addEventListener('DOMContentLoaded', function () {
+         // Load Header
+         fetch('/header.html')
+            .then(response => response.text())
+            .then(data => {
+               document.getElementById('header').innerHTML = data;
+            })
+            .catch(err => console.error('Error loading header:', err));
+      });
+   </script>
+
+   <div class="container mt-5">
+      <h2 class="text-center">Shopping Cart</h2>
+      <hr class="my-4">
+
+      <div id="cartItems" class="table-responsive">
+         <h3>Your Cart</h3>
+         <table class="table table-striped cart-table">
+            <thead>
+               <tr>
+                  <th>Product</th>
+                  <th>Price</th>
+                  <th>Quantity</th>
+                  <th>Total</th>
+                  <th>Edit/Delete</th>
+               </tr>
+            </thead>
+            <tbody id="cartItemsBody">
+            </tbody>
+         </table>
+      </div>
+
+      <div class="cart-summary">
+         <p><strong>Total:</strong> $<span id="cartTotal">0.00</span></p>
+      </div>
+
+      <div class="text-center mt-4">
+         <button class="btn btn-danger" id="emptyCart">Empty Cart</button>
+         <a href="checkout.html" class="btn btn-success" id="checkoutButton">Checkout</a>
+      </div>
+   </div>
+
+   <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+   <script>
+      $(document).ready(function () {
+         let cart = [];
+
+         function getCartItems() {
+            $.get('/cart', function (cartData) {
+               cart = cartData;
+               displayCartItems(cart);
+            }).fail(function () {
+               alert('Failed to load cart items');
+            });
+         }
+
+         function updateCartTotal() {
+            let total = cart.reduce((sum, item) => {
+               if (item.product && item.product.productPrice) {
+                  let price = parseFloat(item.product.productPrice) || 0; // Ensure it's a number
+                  return sum + (price * item.quantity);
+               }
+               return sum;
+            }, 0);
+            $('#cartTotal').text(total.toFixed(2));
+         }
+
+         function displayCartItems() {
+            $('#cartItemsBody').empty();
+
+            if (cart.length === 0) {
+               $('#cartItemsBody').append('<tr><td colspan="5" class="text-center">Your cart is empty.</td></tr>');
+               return;
+            }
+
+            cart.forEach((item, index) => {
+               if (item.product) {
+                  // Accessing productPrice from the nested product object
+                  let price = parseFloat(item.product.productPrice) || 0; // Ensure it's a number
+                  let quantity = item.quantity || 0; // Default to 0 if quantity is undefined
+                  let total = price * quantity;
+
+                  // Append the item to the cart table
+                  $('#cartItemsBody').append(`
+                     <tr>
+                        <td>
+                           <img src="placeholder.png" alt="Product Image">
+                           <span>${item.product.productDescription}</span>
+                        </td>
+                        <td>$${price.toFixed(2)}</td>
+                        <td class="quantity-column">
+                           <span class="quantity-text">${quantity}</span>
+                           <input type="number" class="form-control edit-quantity" value="${quantity}" min="1" data-index="${index}" style="display: none;">
+                        </td>
+                        <td>$${total.toFixed(2)}</td>
+                        <td>
+                           <button class="btn btn-warning editBtn btn-action" data-index="${index}">Edit Quantity</button>
+                           <button class="btn btn-danger removeFromCartBtn btn-action" data-index="${index}">Remove</button>
+                        </td>
+                     </tr>
+                  `);
+               }
+            });
+
+            updateCartTotal();
+         }
+
+         getCartItems();
+
+         $('#cartItemsBody').on('click', '.editBtn', function () {
+            let index = $(this).data('index');
+            let quantityCell = $(this).closest('tr').find('.quantity-column');
+            let quantityText = quantityCell.find('.quantity-text');
+            let quantityInput = quantityCell.find('.edit-quantity');
+
+            quantityText.toggle();
+            quantityInput.toggle();
+
+            if (quantityInput.is(':visible')) {
+               quantityInput.focus();
+               $(this).text('Save Quantity');
+            } else {
+               $(this).text('Edit Quantity');
+            }
+         });
+
+         $('#cartItemsBody').on('blur', '.edit-quantity', function () {
+            let index = $(this).data('index');
+            let newQuantity = parseInt($(this).val());
+            if (newQuantity > 0) {
+               let productId = cart[index].product.productId;
+
+               $.ajax({
+                  url: `/cart/${productId}`,
+                  method: 'PUT',
+                  data: JSON.stringify({ quantity: newQuantity }),
+                  contentType: 'application/json',
+                  success: function () {
+                     getCartItems();
+                  },
+                  error: function () {
+                     alert('Failed to update quantity');
+                  }
+               });
+            }
+         });
+
+         $('#cartItemsBody').on('click', '.removeFromCartBtn', function () {
+            let index = $(this).data('index');
+            let productId = cart[index].product.productId;
+
+            $.ajax({
+               url: `/cart/${productId}`,
+               method: 'DELETE',
+               success: function () {
+                  getCartItems();
+               },
+               error: function () {
+                  alert('Failed to remove item from cart');
+               }
+            });
+         });
+
+         $('#emptyCart').on('click', function () {
+            $.ajax({
+               url: '/cart',
+               method: 'DELETE',
+               success: function () {
+                  getCartItems();
+                  $('#cartTotal').text('0.00');
+               },
+               error: function () {
+                  alert('Failed to empty cart');
+               }
+            });
+         });
+
+         $('#checkoutButton').on('click', function () {
+            // Check if the cart is empty before proceeding to checkout
+            if (cart.length === 0) {
+               alert('Your cart is empty. Please add items to your cart before checking out.');
+               return false; // Prevent navigation
+            }
+         });
+      });
+   </script>
+
+</body>
+
+</html>
