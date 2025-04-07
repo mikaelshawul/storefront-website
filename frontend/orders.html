@@ -96,7 +96,11 @@
                            state: order.billing.state || 'Unknown',
                            city: order.billing.city || 'Unknown',
                            zipCode: order.billing.zipCode || 'Unknown',
-                           address: order.billing.address || 'Unknown'
+                           address: order.billing.address || 'Unknown',
+                           cardType: order.billing.cardType || 'Unknown',
+                           cardNumber: order.billing.cardNumber || 'Unknown',
+                           cardExpiry: order.billing.cardExpiry || 'Unknown',
+                           cardCVV: order.billing.cardCVV || 'Unknown'
                         },
                         cartContents: order.cartContents.map(item => ({
                            productId: item.product.productId || 'Unknown',

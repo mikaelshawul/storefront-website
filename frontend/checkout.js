@@ -141,6 +141,10 @@
                city: document.getElementById('billingCity').value,
                zipCode: document.getElementById('billingZip').value,
                address: document.getElementById('billingAddress').value,
+               cardType: document.getElementById('billingCardType').value,
+               cardNumber: document.getElementById('billingCardNumber').value,
+               cardExpiry: document.getElementById('billingCardExpiry').value,
+               cardCVV: document.getElementById('billingCardCVV').value,
             };
       
             localStorage.setItem('billingDetails', JSON.stringify(billingDetails));
