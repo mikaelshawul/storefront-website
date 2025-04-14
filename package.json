@@ -1,6 +1,14 @@
 {
   "dependencies": {
     "browser-sync": "^3.0.3",
-    "express": "^5.1.0"
+    "dotenv": "^16.5.0",
+    "express": "^5.1.0",
+    "mongodb": "^6.15.0",
+    "mongoose": "^8.13.2"
+  },
+  "scripts": {
+    "start": "node server.js",
+    "db": "mongod --dbpath=./data/db",
+    "live": "node browser-sync.js"
   }
 }
