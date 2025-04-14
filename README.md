@@ -35,7 +35,7 @@ mkdir -p data/db
 npm run db
 ```
 
-This will start MongoDB on the default port 27017.
+This will start MongoDB on the default port 27017. You can use MongoDB Compass to interact with the DB.
 
 ## 🚀 Running the Application
 
